@@ -44,6 +44,10 @@ router.post('/admin',async(req,res)=>{
       if(!myUser){
         return res.status(400).json({Message:'Invalid Credentials'});
       }
+      const isPassword=await bcrypt.compare(password,myUser.password);
+      if(!isPassword){
+        return res.status(400).json({Message:'Invalid Credentials'});
+      }
       const token=jwt.sign({userId:user._id},jwtSecretKey);
       res.cookie('token',token,{httpOnly:true});
       res.redirect('dashboard')
@@ -56,6 +60,11 @@ router.post('/admin',async(req,res)=>{
 router.post('/register',async(req,res)=>{
     try {
         const {username,password}=req.body;
+        const isExist=await User.findOne({username});
+        if(isExist)
+        {
+            return res.status(400).json({Message:'This User already exists try another one'});
+        }
         const hashedPassword=await bcrypt.hash(password,10);
         try {
             const user=await User.create({username:username,password:hashedPassword});
