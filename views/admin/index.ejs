@@ -5,4 +5,7 @@
     <label for="password">password</label>
     <input type="password" placeholder="Enter Password" name="password">
     <input type="submit" class="btn" value="Login">
+    <% if (notMatch) { %>
+        <p style="color: red; font-size: 25px;">invalid credentials</p>
+    <% } %>
 </form>

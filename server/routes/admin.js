@@ -30,7 +30,7 @@ router.get('/admin',async(req,res)=>{
             title:'Admin',
             description:'Simple Blog created with nodejs , Express&mongo ',
         }
-        res.render('admin/index',{locals,layout:adminLayout})
+        res.render('admin/index',{locals,layout:adminLayout,notMatch:false})
     }
     catch(error){
         console.log(error);
@@ -42,11 +42,20 @@ router.post('/admin',async(req,res)=>{
       const {username,password}=req.body;
       const myUser=await User.findOne({ username });  
       if(!myUser){
-        return res.status(400).json({Message:'Invalid Credentials'});
+        res.status(400).render('admin/index',{
+            currentRoute:'',
+            notMatch:true
+        });
+        return;
       }
       const isPassword=await bcrypt.compare(password,myUser.password);
       if(!isPassword){
-        return res.status(400).json({Message:'Invalid Credentials'});
+        // return res.status(400).json({Message:'Invalid Credentials'});
+        res.status(400).render('admin/index',{
+            currentRoute:'',
+            notMatch:true
+        });
+        return;
       }
       const token=jwt.sign({userId:user._id},jwtSecretKey);
       res.cookie('token',token,{httpOnly:true});
